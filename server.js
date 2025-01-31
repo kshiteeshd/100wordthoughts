@@ -4,19 +4,31 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const Article = require("./models/Articles");
 
-// MongoDB Connection String (Replace with your actual string)
-const dbURI =
-  "mongodb+srv://kshiteeshdesai:Kshiteesh2002%40@blog-cluster.rc7y4.mongodb.net/?retryWrites=true&w=majority&appName=blog-cluster";
+// MongoDB Connection String from Environment Variables
+const dbURI = process.env.MONGO_URI;
+
+if (!dbURI) {
+  console.error("❌ MONGO_URI is not defined in environment variables!");
+  process.exit(1);
+}
 
 // Connect to MongoDB
 mongoose
-  .connect(dbURI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("MongoDB connection error:", err));
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // Exit if the database connection fails
+  });
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors()); // Enable CORS for the frontend
+
+// ✅ Add a Root Route to Fix "Cannot GET /" Error
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully! 🚀");
+});
 
 // 1. Create a new article
 app.post("/api/articles", async (req, res) => {
@@ -35,20 +47,19 @@ app.post("/api/articles", async (req, res) => {
     res.status(500).json({ error: "Failed to create article" });
   }
 });
-//2:Fetch All Articles
 
+// 2. Fetch All Articles
 app.get("/api/articles", async (req, res) => {
   try {
-    const articles = await Article.find().sort({ timestamp: -1 }); // Fetch all articles sorted by newest
-    res.json(articles); // Return as an array
+    const articles = await Article.find().sort({ timestamp: -1 });
+    res.json(articles);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch articles" });
   }
 });
 
-
-// Start server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// ✅ Use Render's Assigned Port
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
