@@ -6,7 +6,7 @@ const Article = require("./models/Articles");
 
 // MongoDB Connection String (Replace with your actual string)
 const dbURI =
-  "mongodb+srv://kshiteeshdesai:2002%40Kshiteesh@blog-cluster.rc7y4.mongodb.net/?retryWrites=true&w=majority&appName=blog-cluster";
+  "mongodb+srv://kshiteeshdesai:Kshiteesh2002%40@blog-cluster.rc7y4.mongodb.net/?retryWrites=true&w=majority&appName=blog-cluster";
 
 // Connect to MongoDB
 mongoose
